@@ -11,12 +11,14 @@ import pdi.jwt.{JwtAlgorithm, JwtCirce}
 import io.circe.generic.semiauto._
 
 case class JwtPayload(username: String)
+
 object JwtMiddleware {
   private val logger = org.log4s.getLogger
   val jwtAlgorithm = JwtAlgorithm.HS256
   val secretKey = "abcdef"
 
   implicit val jwtPayloadDecoder = deriveDecoder[JwtPayload]
+
   def apply[F[_] : Monad : Sync](userRepo: UserRepo[F]): AuthMiddleware[F, User] = {
     val authUser: Kleisli[OptionT[F, ?], Request[F], User] =
       Kleisli(request => for {

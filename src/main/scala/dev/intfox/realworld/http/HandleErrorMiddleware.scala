@@ -13,6 +13,7 @@ import org.http4s.syntax._
 import org.http4s.circe._
 
 case class ErrorResponse(errors: BodyErrorResponse)
+
 case class BodyErrorResponse(body: Seq[String])
 
 object ErrorResponse {
@@ -28,7 +29,7 @@ object HandleErrorMiddleware {
     import dsl._
 
     Kleisli { req =>
-      OptionT(httpRoutes.run(req).value.handleErrorWith( err => Ok(ErrorResponse(err.getMessage).asJson).map(Option(_))))
+      OptionT(httpRoutes.run(req).value.handleErrorWith(err => Ok(ErrorResponse(err.getMessage).asJson).map(Option(_))))
     }
   }
 }

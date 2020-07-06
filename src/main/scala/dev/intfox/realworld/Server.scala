@@ -16,13 +16,13 @@ object Server extends IOApp {
   override def run(args: List[String]): IO[ExitCode] =
     (for {
       userRepo <- Resource.pure[IO, UserRepo[IO]](new UserRepoTest[IO])
-      userRouter <- Resource.pure[IO, HttpRoutes[IO]]( UserRoute[IO](userRepo, JwtMiddleware[IO](userRepo)) )
-      httpApp = HandleErrorMiddleware(Router( "/api" -> userRouter ))
+      userRouter <- Resource.pure[IO, HttpRoutes[IO]](UserRoute[IO](userRepo, JwtMiddleware[IO](userRepo)))
+      httpApp = HandleErrorMiddleware(Router("/api" -> userRouter))
       testApp = HttpRoutes.of[IO] { case GET -> Root / "api" => Ok("ok") }
       server <- BlazeServerBuilder[IO]
         .bindHttp(9000, "0.0.0.0")
-        .withHttpApp( httpApp.orNotFound )
+        .withHttpApp(httpApp.orNotFound)
         .resource
-    } yield ()).use( _ => IO.never ).as(ExitCode.Success)
+    } yield ()).use(_ => IO.never).as(ExitCode.Success)
 
 }
